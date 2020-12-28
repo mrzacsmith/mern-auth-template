@@ -20,9 +20,11 @@ server.use(express.json())
 
 server.use('/api/auth', userRouter)
 
-// deployment
+// Serve static assets (build folder) if in production
 if (process.env.NODE_ENV === 'production') {
+  // Set static folder
   app.use(express.static('client/build'))
+  // get anything, load index.html file
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
   })
