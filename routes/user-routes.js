@@ -2,6 +2,7 @@ const router = require('express').Router()
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user-model.js')
+const { requireLogin } = require('../middleware/auth.js')
 
 router.post('/signup', async (req, res) => {
   const { name, email, password } = req.body
@@ -43,6 +44,17 @@ router.post('/signin', async (req, res) => {
     user.updatedAt = undefined
     user.__v = undefined
     return res.json({ token, user })
+  } catch (error) {
+    console.log(`Error:: ${error}`.red)
+  }
+})
+
+router.get('/', requireLogin, async (req, res) => {
+  console.log(req.user)
+
+  try {
+    const user = await User.findById(req.user._id).select('-password')
+    res.status(200).json(user)
   } catch (error) {
     console.log(`Error:: ${error}`.red)
   }
